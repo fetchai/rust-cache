@@ -25,9 +25,7 @@ async function run() {
 
     if (enable_multi_crate){
       const subdirs = getDirectories(wdir);
-      core.info(`subdirs: ${JSON.stringify(subdirs)}`)
       for (const subdir of subdirs){
-        core.info(`subdir: ${subdir}`)
         dirs.push(wdir + "/" + subdir);
       }
     }
@@ -35,7 +33,9 @@ async function run() {
       dirs.push(wdir)
 
     }
-
+    for (const dir of dirs){
+      core.info(`***** - subdir: ${dir}`)
+    }
 
     core.info(`process.cwd(): ${process.cwd()}`)
     core.info(`dirs: ${JSON.stringify(dirs)}`)
