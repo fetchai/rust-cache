@@ -1,6 +1,7 @@
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
 import { cleanTarget, getCacheConfig, getCargoBins, getPackages, stateBins, stateKey } from "./common";
+const { readdirSync } = require('fs')
 
 async function run() {
   if (!cache.isFeatureAvailable()) {
@@ -9,9 +10,16 @@ async function run() {
   }
 
   try {
-    const enable_multi_crate = core.getInput("enable-multi-crate");
+    const enable_multi_crate = core.getInput("enable-multi-crate") || false;
     core.info(`enable-multi-crate": ${enable_multi_crate}`);
 
+    const getDirectories = (source: any) =>
+      readdirSync(source, { withFileTypes: true })
+        .filter((dirent: { isDirectory: () => any; }) => dirent.isDirectory())
+        .map((dirent: { name: any; }) => dirent.name)    
+
+    core.info(`getDirectories: ${JSON.stringify(getDirectories)}`)
+    
     var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();
     if (cacheOnFailure !== "true") {
       cacheOnFailure = "false";

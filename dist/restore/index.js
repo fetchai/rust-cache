@@ -60818,14 +60818,19 @@ async function rm(parent, dirent) {
 
 
 
+const { readdirSync } = __nccwpck_require__(7147);
 async function run() {
     if (!cache.isFeatureAvailable()) {
         setCacheHitOutput(false);
         return;
     }
     try {
-        const enable_multi_crate = core.getInput("enable-multi-crate");
+        const enable_multi_crate = core.getInput("enable-multi-crate") || false;
         core.info(`enable-multi-crate": ${enable_multi_crate}`);
+        const getDirectories = (source) => readdirSync(source, { withFileTypes: true })
+            .filter((dirent) => dirent.isDirectory())
+            .map((dirent) => dirent.name);
+        core.info(`getDirectories: ${JSON.stringify(getDirectories)}`);
         var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();
         if (cacheOnFailure !== "true") {
             cacheOnFailure = "false";
