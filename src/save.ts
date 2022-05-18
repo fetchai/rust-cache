@@ -54,7 +54,7 @@ async function run() {
 
 
     try {
-      const { paths: savePaths, key } = await getCacheConfig();
+      const { paths: savePaths, key } = await getCacheConfig(dir);
 
       core.info(`getState: ${stateKey + dir}: ${core.getState(stateKey + dir) } ==${key} `)
       if (core.getState(stateKey + dir) === key) {

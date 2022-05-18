@@ -49,15 +49,15 @@ export function isValidEvent(): boolean {
   return RefKey in process.env && Boolean(process.env[RefKey]);
 }
 
-export async function getCacheConfig(): Promise<CacheConfig> {
+export async function getCacheConfig(dir: string): Promise<CacheConfig> {
   let lockHash = core.getState(stateHash);
   core.info(`getCacheConfig`)
   core.info(`lockHash - 1: ${lockHash}`)
   if (!lockHash) {
     lockHash = await getLockfileHash();
     core.info(`lockHash - 2: ${lockHash}`)
-    core.info(`saveState: ${stateHash}: ${lockHash}`)
-    core.saveState(stateHash, lockHash);
+    core.info(`saveState: ${stateHash + dir}: ${lockHash}`)
+    core.saveState(stateHash + dir, lockHash);
   }
 
   let key = `v0-rust-`;

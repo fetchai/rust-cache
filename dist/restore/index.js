@@ -60647,15 +60647,15 @@ const RefKey = "GITHUB_REF";
 function isValidEvent() {
     return RefKey in process.env && Boolean(process.env[RefKey]);
 }
-async function getCacheConfig() {
+async function getCacheConfig(dir) {
     let lockHash = core.getState(stateHash);
     core.info(`getCacheConfig`);
     core.info(`lockHash - 1: ${lockHash}`);
     if (!lockHash) {
         lockHash = await getLockfileHash();
         core.info(`lockHash - 2: ${lockHash}`);
-        core.info(`saveState: ${stateHash}: ${lockHash}`);
-        core.saveState(stateHash, lockHash);
+        core.info(`saveState: ${stateHash + dir}: ${lockHash}`);
+        core.saveState(stateHash + dir, lockHash);
     }
     let key = `v0-rust-`;
     const sharedKey = core.getInput("sharedKey");
@@ -60855,7 +60855,7 @@ async function run() {
             }
             core.exportVariable("CACHE_ON_FAILURE", cacheOnFailure);
             core.exportVariable("CARGO_INCREMENTAL", 0);
-            const { paths, key, restoreKeys } = await getCacheConfig();
+            const { paths, key, restoreKeys } = await getCacheConfig(dir);
             const bins = await getCargoBins();
             core.saveState(stateBins, JSON.stringify([...bins]));
             core.info(`Restoring paths:\n    ${paths.join("\n    ")}`);

@@ -60647,15 +60647,15 @@ const RefKey = "GITHUB_REF";
 function isValidEvent() {
     return RefKey in process.env && Boolean(process.env[RefKey]);
 }
-async function getCacheConfig() {
+async function getCacheConfig(dir) {
     let lockHash = core.getState(stateHash);
     core.info(`getCacheConfig`);
     core.info(`lockHash - 1: ${lockHash}`);
     if (!lockHash) {
         lockHash = await getLockfileHash();
         core.info(`lockHash - 2: ${lockHash}`);
-        core.info(`saveState: ${stateHash}: ${lockHash}`);
-        core.saveState(stateHash, lockHash);
+        core.info(`saveState: ${stateHash + dir}: ${lockHash}`);
+        core.saveState(stateHash + dir, lockHash);
     }
     let key = `v0-rust-`;
     const sharedKey = core.getInput("sharedKey");
@@ -60853,7 +60853,7 @@ async function run() {
         process.chdir(dir);
         core.info(`***** - subdir: ${dir}`);
         try {
-            const { paths: savePaths, key } = await getCacheConfig();
+            const { paths: savePaths, key } = await getCacheConfig(dir);
             core.info(`getState: ${stateKey + dir}: ${core.getState(stateKey + dir)} ==${key} `);
             if (core.getState(stateKey + dir) === key) {
                 core.info(`Key: ${key}: Cache up-to-date.`);
