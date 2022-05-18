@@ -25,6 +25,8 @@ async function run() {
     return;
   }
   core.info(`save.run()1`)
+  core.info(`process.env.PATH:${process.env.PATH}`)
+  
 
   try {
     const { paths: savePaths, key } = await getCacheConfig();

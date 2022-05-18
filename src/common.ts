@@ -48,15 +48,18 @@ export function isValidEvent(): boolean {
 }
 
 export async function getCacheConfig(): Promise<CacheConfig> {
+  console.log(`getCacheConfig1`)
   let lockHash = core.getState(stateHash);
   if (!lockHash) {
     lockHash = await getLockfileHash();
     core.saveState(stateHash, lockHash);
   }
+  console.log(`getCacheConfig2`)
 
   let key = `v0-rust-`;
 
   const sharedKey = core.getInput("sharedKey");
+  console.log(`getCacheConfig3`)
   if (sharedKey) {
     key += `${sharedKey}-`;
   } else {
@@ -71,8 +74,10 @@ export async function getCacheConfig(): Promise<CacheConfig> {
     }
   }
 
+  console.log(`getCacheConfig4`)
   key += await getRustKey();
 
+  console.log(`getCacheConfig5`)
   return {
     paths: [
       path.join(cargoHome, "bin"),
