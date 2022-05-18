@@ -60633,7 +60633,7 @@ if (cwd) {
 }
 const stateBins = "RUST_CACHE_BINS";
 const stateKey = "RUST_CACHE_KEY";
-const stateHash = "RUST_CACHE_HASH";
+// const stateHash = "RUST_CACHE_HASH";
 const home = external_os_default().homedir();
 const cargoHome = process.env.CARGO_HOME || external_path_default().join(home, ".cargo");
 const paths = {
@@ -60648,9 +60648,14 @@ function isValidEvent() {
     return RefKey in process.env && Boolean(process.env[RefKey]);
 }
 async function getCacheConfig() {
-    let lockHash = await getLockfileHash();
-    core.info(`lockHash - 2: ${lockHash}`);
-    core.saveState(stateHash, lockHash);
+    let uniqueKey = await getLockfileHash();
+    let lockHash = core.getState(uniqueKey);
+    core.info(`lockHash - 1: ${lockHash}`);
+    if (!lockHash) {
+        lockHash = await getLockfileHash();
+        core.info(`lockHash - 2: ${lockHash}`);
+        core.saveState(uniqueKey, lockHash);
+    }
     let key = `v0-rust-`;
     const sharedKey = core.getInput("sharedKey");
     if (sharedKey) {
@@ -60848,7 +60853,8 @@ async function run() {
         core.info(`***** - subdir: ${dir}`);
         try {
             const { paths: savePaths, key } = await getCacheConfig();
-            if (core.getState(stateKey) === key) {
+            let uniqueKey = await getLockfileHash();
+            if (core.getState(uniqueKey) === key) {
                 core.info(`Key: ${key}: Cache up-to-date.`);
                 continue;
             }

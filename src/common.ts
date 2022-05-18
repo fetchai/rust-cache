@@ -25,7 +25,7 @@ if (cwd) {
 
 export const stateBins = "RUST_CACHE_BINS";
 export const stateKey = "RUST_CACHE_KEY";
-const stateHash = "RUST_CACHE_HASH";
+// const stateHash = "RUST_CACHE_HASH";
 
 const home = os.homedir();
 const cargoHome = process.env.CARGO_HOME || path.join(home, ".cargo");
@@ -50,9 +50,14 @@ export function isValidEvent(): boolean {
 }
 
 export async function getCacheConfig(): Promise<CacheConfig> {
-  let lockHash = await getLockfileHash();
-  core.info(`lockHash - 2: ${lockHash}`)
-  core.saveState(stateHash, lockHash);
+  let uniqueKey = await getLockfileHash();
+  let lockHash = core.getState(uniqueKey);
+  core.info(`lockHash - 1: ${lockHash}`)
+  if (!lockHash) {
+    lockHash = await getLockfileHash();
+    core.info(`lockHash - 2: ${lockHash}`)
+    core.saveState(uniqueKey, lockHash);
+  }
 
   let key = `v0-rust-`;
 
@@ -144,7 +149,7 @@ export async function getCmdOutput(
   return stdout;
 }
 
-async function getLockfileHash(): Promise<string> {
+export async function getLockfileHash(): Promise<string> {
   const globber = await glob.create("**/Cargo.toml\n**/Cargo.lock\nrust-toolchain\nrust-toolchain.toml", {
     followSymbolicLinks: false,
   });
