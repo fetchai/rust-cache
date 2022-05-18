@@ -13,9 +13,8 @@ import {
   Packages,
   paths,
   rm,
-  getLockfileHash,
   // stateBins,
-  // stateKey,
+  stateKey,
 } from "./common";
 
 const { readdirSync } = require('fs')
@@ -57,8 +56,7 @@ async function run() {
     try {
       const { paths: savePaths, key } = await getCacheConfig();
 
-      let uniqueKey = await getLockfileHash();
-      if (core.getState(uniqueKey) === uniqueKey) {
+      if (core.getState(stateKey + dir) === key) {
         core.info(`Key: ${key}: Cache up-to-date.`);
         continue;
       }

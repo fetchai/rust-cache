@@ -60633,7 +60633,7 @@ if (cwd) {
 }
 const stateBins = "RUST_CACHE_BINS";
 const stateKey = "RUST_CACHE_KEY";
-// const stateHash = "RUST_CACHE_HASH";
+const stateHash = "RUST_CACHE_HASH";
 const home = external_os_default().homedir();
 const cargoHome = process.env.CARGO_HOME || external_path_default().join(home, ".cargo");
 const paths = {
@@ -60648,13 +60648,12 @@ function isValidEvent() {
     return RefKey in process.env && Boolean(process.env[RefKey]);
 }
 async function getCacheConfig() {
-    let uniqueKey = await getLockfileHash();
-    let lockHash = core.getState(uniqueKey);
+    let lockHash = core.getState(stateHash);
     core.info(`lockHash - 1: ${lockHash}`);
     if (!lockHash) {
-        lockHash = await getLockfileHash();
         core.info(`lockHash - 2: ${lockHash}`);
-        core.saveState(uniqueKey, lockHash);
+        lockHash = await getLockfileHash();
+        core.saveState(stateHash, lockHash);
     }
     let key = `v0-rust-`;
     const sharedKey = core.getInput("sharedKey");
@@ -60830,7 +60829,7 @@ async function run() {
     const enable_multi_crate = core.getInput("enable-multi-crate") || false;
     core.info(`enable-multi-crate": ${enable_multi_crate}`);
     var dirs = new Array();
-    const wdir = process.cwd();
+    const wdir = core.getInput("working-directory");
     const getDirectories = (source) => readdirSync(source, { withFileTypes: true })
         .filter((dirent) => dirent.isDirectory())
         .map((dirent) => dirent.name);
@@ -60863,7 +60862,7 @@ async function run() {
             const restoreKey = await cache.restoreCache(paths, key, restoreKeys);
             if (restoreKey) {
                 core.info(`Restored from cache key "${restoreKey}".`);
-                core.saveState(stateKey, restoreKey);
+                core.saveState(stateKey + dir, restoreKey);
                 if (restoreKey !== key) {
                     // pre-clean the target directory on cache mismatch 
                     const packages = await getPackages();

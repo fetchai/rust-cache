@@ -12,7 +12,7 @@ async function run() {
   core.info(`enable-multi-crate": ${enable_multi_crate}`);
 
   var dirs = new Array();
-  const wdir = process.cwd();
+  const wdir =  core.getInput("working-directory");
 
   const getDirectories = (source: any) =>
     readdirSync(source, { withFileTypes: true })
@@ -57,7 +57,7 @@ async function run() {
       const restoreKey = await cache.restoreCache(paths, key, restoreKeys);
       if (restoreKey) {
         core.info(`Restored from cache key "${restoreKey}".`);
-        core.saveState(stateKey, restoreKey);
+        core.saveState(stateKey + dir, restoreKey);
 
         if (restoreKey !== key) {
           // pre-clean the target directory on cache mismatch 
