@@ -1,6 +1,6 @@
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
-import { getCacheConfig, getCargoBins, stateBins, stateKey } from "./common";
+import { cleanTarget, getCacheConfig, getCargoBins, getPackages, stateBins, stateKey } from "./common";
 const { readdirSync } = require('fs')
 
 async function run() {
@@ -33,6 +33,8 @@ async function run() {
   }
 
   for (const dir of dirs){
+    process.chdir(dir);
+    
     try {
 
       core.info(`***** - subdir: ${dir}`)
@@ -57,12 +59,12 @@ async function run() {
         core.info(`Restored from cache key "${restoreKey}".`);
         core.saveState(stateKey, restoreKey);
 
-        // if (restoreKey !== key) {
-        //   // pre-clean the target directory on cache mismatch 
-        //   const packages = await getPackages();
+        if (restoreKey !== key) {
+          // pre-clean the target directory on cache mismatch 
+          const packages = await getPackages();
 
-        //   // await cleanTarget(packages); 
-        // }
+          await cleanTarget(packages);
+        }
 
         setCacheHitOutput(restoreKey === key);
       } else {
