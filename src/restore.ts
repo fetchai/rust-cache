@@ -33,7 +33,7 @@ async function run() {
       core.saveState(stateKey, restoreKey);
 
       if (restoreKey !== key) {
-        // pre-clean the target directory on cache mismatch
+        // pre-clean the target directory on cache mismatch 
         const packages = await getPackages();
 
         await cleanTarget(packages);
