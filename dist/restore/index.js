@@ -60831,7 +60831,7 @@ async function run() {
             .filter((dirent) => dirent.isDirectory())
             .map((dirent) => dirent.name);
         core.info(`process.cwd(): ${process.cwd()}`);
-        core.info(`getDirectories: ${JSON.stringify(getDirectories)}`);
+        core.info(`getDirectories: ${JSON.stringify(getDirectories(process.cwd()))}`);
         var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();
         if (cacheOnFailure !== "true") {
             cacheOnFailure = "false";
