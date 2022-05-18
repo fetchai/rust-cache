@@ -60845,39 +60845,42 @@ async function run() {
         dirs.push(wdir);
     }
     core.info(`dirs: ${JSON.stringify(dirs)}`);
-    try {
-        const { paths: savePaths, key } = await getCacheConfig();
-        if (core.getState(stateKey) === key) {
-            core.info(`Cache up-to-date.`);
-            return;
-        }
-        // TODO: remove this once https://github.com/actions/toolkit/pull/553 lands
-        await macOsWorkaround();
-        const registryName = await getRegistryName();
-        const packages = await getPackages();
+    for (const dir of dirs) {
+        process.chdir(dir);
         try {
-            await cleanRegistry(registryName, packages);
+            const { paths: savePaths, key } = await getCacheConfig();
+            if (core.getState(stateKey) === key) {
+                core.info(`Cache up-to-date.`);
+                return;
+            }
+            // TODO: remove this once https://github.com/actions/toolkit/pull/553 lands
+            await macOsWorkaround();
+            const registryName = await getRegistryName();
+            const packages = await getPackages();
+            try {
+                await cleanRegistry(registryName, packages);
+            }
+            catch { }
+            core.info(`Removed  cleanBin as it prevents us working with multiple cargo directories`);
+            // try {
+            //   await cleanBin();
+            // } catch {}
+            try {
+                await cleanGit(packages);
+            }
+            catch { }
+            try {
+                await cleanTarget(packages);
+            }
+            catch { }
+            core.info(`Saving paths:\n    ${savePaths.join("\n    ")}`);
+            core.info(`In directory:\n    ${process.cwd()}`);
+            core.info(`Using key:\n    ${key}`);
+            await cache.saveCache(savePaths, key);
         }
-        catch { }
-        core.info(`Removed  cleanBin as it prevents us working with multiple cargo directories`);
-        // try {
-        //   await cleanBin();
-        // } catch {}
-        try {
-            await cleanGit(packages);
+        catch (e) {
+            core.info(`[warning] ${e.message}`);
         }
-        catch { }
-        try {
-            await cleanTarget(packages);
-        }
-        catch { }
-        core.info(`Saving paths:\n    ${savePaths.join("\n    ")}`);
-        core.info(`In directory:\n    ${process.cwd()}`);
-        core.info(`Using key:\n    ${key}`);
-        await cache.saveCache(savePaths, key);
-    }
-    catch (e) {
-        core.info(`[warning] ${e.message}`);
     }
 }
 run();
