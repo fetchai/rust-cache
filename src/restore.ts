@@ -8,32 +8,33 @@ async function run() {
     setCacheHitOutput(false);
     return;
   }
+  const enable_multi_crate = core.getInput("enable-multi-crate") || false;
+  core.info(`enable-multi-crate": ${enable_multi_crate}`);
 
-  try {
-    const enable_multi_crate = core.getInput("enable-multi-crate") || false;
-    core.info(`enable-multi-crate": ${enable_multi_crate}`);
+  var dirs = new Array();
+  const wdir = process.cwd();
 
-    var dirs = new Array();
-    const wdir = process.cwd();
-
-    const getDirectories = (source: any) =>
-      readdirSync(source, { withFileTypes: true })
-        .filter((dirent: { isDirectory: () => any; }) => dirent.isDirectory())
-        .map((dirent: { name: any; }) => dirent.name)
+  const getDirectories = (source: any) =>
+    readdirSync(source, { withFileTypes: true })
+      .filter((dirent: { isDirectory: () => any; }) => dirent.isDirectory())
+      .map((dirent: { name: any; }) => dirent.name)
 
 
 
-    if (enable_multi_crate){
-      const subdirs = getDirectories(wdir);
-      for (const subdir of subdirs){
-        dirs.push(wdir + "/" + subdir);
-      }
+  if (enable_multi_crate){
+    const subdirs = getDirectories(wdir);
+    for (const subdir of subdirs){
+      dirs.push(wdir + "/" + subdir);
     }
-    else{
-      dirs.push(wdir)
+  }
+  else{
+    dirs.push(wdir)
 
-    }
-    for (const dir of dirs){
+  }
+
+  for (const dir of dirs){
+    try {
+
       core.info(`***** - subdir: ${dir}`)
 
       var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();
@@ -69,11 +70,11 @@ async function run() {
 
         setCacheHitOutput(false);
       }
-    }
-  } catch (e) {
-    setCacheHitOutput(false);
+    } catch (e) {
+      setCacheHitOutput(false);
 
-    core.info(`[warning] ${(e as any).message}`);
+      core.info(`[warning] ${(e as any).message}`);
+    }
   }
 }
 
