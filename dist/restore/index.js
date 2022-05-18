@@ -60590,13 +60590,13 @@ __nccwpck_require__.r(__webpack_exports__);
 // EXTERNAL MODULE: ./node_modules/@actions/cache/lib/cache.js
 var cache = __nccwpck_require__(7799);
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(2186);
+var lib_core = __nccwpck_require__(2186);
 // EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
 var exec = __nccwpck_require__(1514);
 // EXTERNAL MODULE: ./node_modules/@actions/glob/lib/glob.js
 var glob = __nccwpck_require__(8090);
 // EXTERNAL MODULE: ./node_modules/@actions/io/lib/io.js
-var io = __nccwpck_require__(7436);
+var lib_io = __nccwpck_require__(7436);
 // EXTERNAL MODULE: external "crypto"
 var external_crypto_ = __nccwpck_require__(6113);
 var external_crypto_default = /*#__PURE__*/__nccwpck_require__.n(external_crypto_);
@@ -60619,15 +60619,15 @@ var external_path_default = /*#__PURE__*/__nccwpck_require__.n(external_path_);
 
 
 process.on("uncaughtException", (e) => {
-    core.info(`[warning] ${e.message}`);
+    lib_core.info(`[warning] ${e.message}`);
     if (e.stack) {
-        core.info(e.stack);
+        lib_core.info(e.stack);
     }
 });
-const cwd = core.getInput("working-directory");
-core.info(`working-directory": ${cwd}`);
+const cwd = lib_core.getInput("working-directory");
+lib_core.info(`working-directory": ${cwd}`);
 // TODO: this could be read from .cargo config file directly
-const targetDir = core.getInput("target-dir") || "./target";
+const targetDir = lib_core.getInput("target-dir") || "./target";
 if (cwd) {
     process.chdir(cwd);
 }
@@ -60648,18 +60648,18 @@ function isValidEvent() {
     return RefKey in process.env && Boolean(process.env[RefKey]);
 }
 async function getCacheConfig() {
-    let lockHash = core.getState(stateHash);
+    let lockHash = lib_core.getState(stateHash);
     if (!lockHash) {
         lockHash = await getLockfileHash();
-        core.saveState(stateHash, lockHash);
+        lib_core.saveState(stateHash, lockHash);
     }
     let key = `v0-rust-`;
-    const sharedKey = core.getInput("sharedKey");
+    const sharedKey = lib_core.getInput("sharedKey");
     if (sharedKey) {
         key += `${sharedKey}-`;
     }
     else {
-        const inputKey = core.getInput("key");
+        const inputKey = lib_core.getInput("key");
         if (inputKey) {
             key += `${inputKey}-`;
         }
@@ -60745,34 +60745,34 @@ async function getPackages() {
         .filter((p) => !p.manifest_path.startsWith(cwd))
         .map((p) => {
         const targets = p.targets.filter((t) => t.kind[0] === "lib").map((t) => t.name);
-        return { name: p.name, version: p.version, targets, path: external_path_default().dirname(p.manifest_path) };
+        return { name: p.name, version: p.version, targets, path: path.dirname(p.manifest_path) };
     });
 }
 async function cleanTarget(packages) {
-    await external_fs_default().promises.unlink(external_path_default().join(targetDir, "./.rustc_info.json"));
+    await fs.promises.unlink(path.join(targetDir, "./.rustc_info.json"));
     await cleanProfileTarget(packages, "debug");
     await cleanProfileTarget(packages, "release");
 }
 async function cleanProfileTarget(packages, profile) {
     try {
-        await external_fs_default().promises.access(external_path_default().join(targetDir, profile));
+        await fs.promises.access(path.join(targetDir, profile));
     }
     catch {
         return;
     }
-    await io.rmRF(external_path_default().join(targetDir, profile, "./examples"));
-    await io.rmRF(external_path_default().join(targetDir, profile, "./incremental"));
+    await io.rmRF(path.join(targetDir, profile, "./examples"));
+    await io.rmRF(path.join(targetDir, profile, "./incremental"));
     let dir;
     // remove all *files* from the profile directory
-    dir = await external_fs_default().promises.opendir(external_path_default().join(targetDir, profile));
+    dir = await fs.promises.opendir(path.join(targetDir, profile));
     for await (const dirent of dir) {
         if (dirent.isFile()) {
             await rm(dir.path, dirent);
         }
     }
     const keepPkg = new Set(packages.map((p) => p.name));
-    await rmExcept(external_path_default().join(targetDir, profile, "./build"), keepPkg);
-    await rmExcept(external_path_default().join(targetDir, profile, "./.fingerprint"), keepPkg);
+    await rmExcept(path.join(targetDir, profile, "./build"), keepPkg);
+    await rmExcept(path.join(targetDir, profile, "./.fingerprint"), keepPkg);
     const keepDeps = new Set(packages.flatMap((p) => {
         const names = [];
         for (const n of [p.name, ...p.targets]) {
@@ -60781,19 +60781,19 @@ async function cleanProfileTarget(packages, profile) {
         }
         return names;
     }));
-    await rmExcept(external_path_default().join(targetDir, profile, "./deps"), keepDeps);
+    await rmExcept(path.join(targetDir, profile, "./deps"), keepDeps);
 }
-const oneWeek = 7 * 24 * 3600 * 1000;
+const oneWeek = (/* unused pure expression or super */ null && (7 * 24 * 3600 * 1000));
 async function rmExcept(dirName, keepPrefix) {
-    const dir = await external_fs_default().promises.opendir(dirName);
+    const dir = await fs.promises.opendir(dirName);
     for await (const dirent of dir) {
         let name = dirent.name;
         const idx = name.lastIndexOf("-");
         if (idx !== -1) {
             name = name.slice(0, idx);
         }
-        const fileName = external_path_default().join(dir.path, dirent.name);
-        const { mtime } = await external_fs_default().promises.stat(fileName);
+        const fileName = path.join(dir.path, dirent.name);
+        const { mtime } = await fs.promises.stat(fileName);
         // we don’t really know
         if (!keepPrefix.has(name) || Date.now() - mtime.getTime() > oneWeek) {
             await rm(dir.path, dirent);
@@ -60802,10 +60802,10 @@ async function rmExcept(dirName, keepPrefix) {
 }
 async function rm(parent, dirent) {
     try {
-        const fileName = external_path_default().join(parent, dirent.name);
+        const fileName = path.join(parent, dirent.name);
         core.debug(`deleting "${fileName}"`);
         if (dirent.isFile()) {
-            await external_fs_default().promises.unlink(fileName);
+            await fs.promises.unlink(fileName);
         }
         else if (dirent.isDirectory()) {
             await io.rmRF(fileName);
@@ -60824,8 +60824,8 @@ async function run() {
         setCacheHitOutput(false);
         return;
     }
-    const enable_multi_crate = core.getInput("enable-multi-crate") || false;
-    core.info(`enable-multi-crate": ${enable_multi_crate}`);
+    const enable_multi_crate = lib_core.getInput("enable-multi-crate") || false;
+    lib_core.info(`enable-multi-crate": ${enable_multi_crate}`);
     var dirs = new Array();
     const wdir = process.cwd();
     const getDirectories = (source) => readdirSync(source, { withFileTypes: true })
@@ -60842,43 +60842,43 @@ async function run() {
     }
     for (const dir of dirs) {
         try {
-            core.info(`***** - subdir: ${dir}`);
-            var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();
+            lib_core.info(`***** - subdir: ${dir}`);
+            var cacheOnFailure = lib_core.getInput("cache-on-failure").toLowerCase();
             if (cacheOnFailure !== "true") {
                 cacheOnFailure = "false";
             }
-            core.exportVariable("CACHE_ON_FAILURE", cacheOnFailure);
-            core.exportVariable("CARGO_INCREMENTAL", 0);
+            lib_core.exportVariable("CACHE_ON_FAILURE", cacheOnFailure);
+            lib_core.exportVariable("CARGO_INCREMENTAL", 0);
             const { paths, key, restoreKeys } = await getCacheConfig();
             const bins = await getCargoBins();
-            core.saveState(stateBins, JSON.stringify([...bins]));
-            core.info(`Restoring paths:\n    ${paths.join("\n    ")}`);
-            core.info(`In directory:\n    ${process.cwd()}`);
-            core.info(`Using keys:\n    ${[key, ...restoreKeys].join("\n    ")}`);
+            lib_core.saveState(stateBins, JSON.stringify([...bins]));
+            lib_core.info(`Restoring paths:\n    ${paths.join("\n    ")}`);
+            lib_core.info(`In directory:\n    ${process.cwd()}`);
+            lib_core.info(`Using keys:\n    ${[key, ...restoreKeys].join("\n    ")}`);
             const restoreKey = await cache.restoreCache(paths, key, restoreKeys);
             if (restoreKey) {
-                core.info(`Restored from cache key "${restoreKey}".`);
-                core.saveState(stateKey, restoreKey);
-                if (restoreKey !== key) {
-                    // pre-clean the target directory on cache mismatch 
-                    const packages = await getPackages();
-                    await cleanTarget(packages);
-                }
+                lib_core.info(`Restored from cache key "${restoreKey}".`);
+                lib_core.saveState(stateKey, restoreKey);
+                // if (restoreKey !== key) {
+                //   // pre-clean the target directory on cache mismatch 
+                //   const packages = await getPackages();
+                //   // await cleanTarget(packages); 
+                // }
                 setCacheHitOutput(restoreKey === key);
             }
             else {
-                core.info("No cache found.");
+                lib_core.info("No cache found.");
                 setCacheHitOutput(false);
             }
         }
         catch (e) {
             setCacheHitOutput(false);
-            core.info(`[warning] ${e.message}`);
+            lib_core.info(`[warning] ${e.message}`);
         }
     }
 }
 function setCacheHitOutput(cacheHit) {
-    core.setOutput("cache-hit", cacheHit.toString());
+    lib_core.setOutput("cache-hit", cacheHit.toString());
 }
 run();
 
