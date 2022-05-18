@@ -50,13 +50,15 @@ async function run() {
   core.info(`dirs: ${JSON.stringify(dirs)}`)
   for (const dir of dirs){
     process.chdir(dir);
+    core.info(`***** - subdir: ${dir}`)
+
 
     try {
       const { paths: savePaths, key } = await getCacheConfig();
 
       if (core.getState(stateKey) === key) {
         core.info(`Cache up-to-date.`);
-        return;
+        continue;
       }
 
       // TODO: remove this once https://github.com/actions/toolkit/pull/553 lands
