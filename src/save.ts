@@ -18,39 +18,54 @@ import {
 } from "./common";
 
 async function run() {
+  
+  core.info(`save.run()`)
+  core.info(`directory: ${process.cwd()}`)
   if (!cache.isFeatureAvailable()) {
     return;
   }
+  core.info(`save.run()1`)
 
   try {
     const { paths: savePaths, key } = await getCacheConfig();
+    core.info(`save.run()2`)
 
     if (core.getState(stateKey) === key) {
       core.info(`Cache up-to-date.`);
       return;
     }
+    core.info(`save.run()3`)
 
     // TODO: remove this once https://github.com/actions/toolkit/pull/553 lands
     await macOsWorkaround();
 
+    core.info(`save.run()4`)
+
     const registryName = await getRegistryName();
     const packages = await getPackages();
+
+    core.info(`save.run()5`)
 
     try {
       await cleanRegistry(registryName, packages);
     } catch {}
 
+    core.info(`save.run()6`)
+
     try {
       await cleanBin();
     } catch {}
+    core.info(`save.run()7`)
 
     try {
       await cleanGit(packages);
     } catch {}
 
+    core.info(`save.run()8`)
     try {
       await cleanTarget(packages);
     } catch {}
+    core.info(`save.run()9`)
 
     core.info(`Saving paths:\n    ${savePaths.join("\n    ")}`);
     core.info(`In directory:\n    ${process.cwd()}`);
