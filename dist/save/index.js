@@ -60649,7 +60649,9 @@ function isValidEvent() {
 }
 async function getCacheConfig() {
     let lockHash = core.getState(stateHash);
+    core.info(`lockHash - 1: ${lockHash}`);
     if (!lockHash) {
+        core.info(`lockHash - 2: ${lockHash}`);
         lockHash = await getLockfileHash();
         core.saveState(stateHash, lockHash);
     }
@@ -60851,7 +60853,7 @@ async function run() {
         try {
             const { paths: savePaths, key } = await getCacheConfig();
             if (core.getState(stateKey) === key) {
-                core.info(`Cache up-to-date.`);
+                core.info(`Key: ${key}: Cache up-to-date.`);
                 continue;
             }
             // TODO: remove this once https://github.com/actions/toolkit/pull/553 lands

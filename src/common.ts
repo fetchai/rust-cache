@@ -51,7 +51,9 @@ export function isValidEvent(): boolean {
 
 export async function getCacheConfig(): Promise<CacheConfig> {
   let lockHash = core.getState(stateHash);
+  core.info(`lockHash - 1: ${lockHash}`)
   if (!lockHash) {
+    core.info(`lockHash - 2: ${lockHash}`)
     lockHash = await getLockfileHash();
     core.saveState(stateHash, lockHash);
   }
