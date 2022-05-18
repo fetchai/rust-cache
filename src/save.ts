@@ -47,28 +47,32 @@ async function run() {
     const packages = await getPackages();
 
     core.info(`save.run()5`)
+    await getCacheConfig();
 
     try {
       await cleanRegistry(registryName, packages);
     } catch {}
 
     core.info(`save.run()6`)
+    await getCacheConfig();
 
     try {
       await cleanBin();
     } catch {}
     core.info(`save.run()7`)
+    await getCacheConfig();
 
     try {
       await cleanGit(packages);
     } catch {}
 
     core.info(`save.run()8`)
+    await getCacheConfig();
     try {
       await cleanTarget(packages);
     } catch {}
     core.info(`save.run()9`)
-
+    await getCacheConfig();
     core.info(`Saving paths:\n    ${savePaths.join("\n    ")}`);
     core.info(`In directory:\n    ${process.cwd()}`);
     core.info(`Using key:\n    ${key}`);
