@@ -12,7 +12,7 @@ async function run() {
   core.info(`enable-multi-crate": ${enable_multi_crate}`);
 
   var dirs = new Array();
-  const wdir = process.cwd();
+  const wdir =  core.getInput("working-directory");
 
   const getDirectories = (source: any) =>
     readdirSync(source, { withFileTypes: true })

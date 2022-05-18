@@ -17,10 +17,37 @@ import {
   stateKey,
 } from "./common";
 
+const { readdirSync } = require('fs')
+
+
 async function run() {
   if (!cache.isFeatureAvailable()) {
     return;
   }
+  const enable_multi_crate = core.getInput("enable-multi-crate") || false;
+  core.info(`enable-multi-crate": ${enable_multi_crate}`);
+  
+  var dirs = new Array();
+  const wdir =  core.getInput("working-directory");
+
+  const getDirectories = (source: any) =>
+    readdirSync(source, { withFileTypes: true })
+      .filter((dirent: { isDirectory: () => any; }) => dirent.isDirectory())
+      .map((dirent: { name: any; }) => dirent.name)
+
+
+
+  if (enable_multi_crate){
+    const subdirs = getDirectories(wdir);
+    for (const subdir of subdirs){
+      dirs.push(wdir + "/" + subdir);
+    }
+  }
+  else{
+    dirs.push(wdir)
+
+  }
+  core.info(`dirs: ${JSON.stringify(dirs)}`)
 
   try {
     const { paths: savePaths, key } = await getCacheConfig();
@@ -160,3 +187,4 @@ async function macOsWorkaround() {
     await exec.exec("sudo", ["/usr/sbin/purge"], { silent: true });
   } catch {}
 }
+

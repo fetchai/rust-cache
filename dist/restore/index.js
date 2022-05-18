@@ -60827,7 +60827,7 @@ async function run() {
     const enable_multi_crate = core.getInput("enable-multi-crate") || false;
     core.info(`enable-multi-crate": ${enable_multi_crate}`);
     var dirs = new Array();
-    const wdir = process.cwd();
+    const wdir = core.getInput("working-directory");
     const getDirectories = (source) => readdirSync(source, { withFileTypes: true })
         .filter((dirent) => dirent.isDirectory())
         .map((dirent) => dirent.name);

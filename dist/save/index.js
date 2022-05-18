@@ -60823,10 +60823,28 @@ async function rm(parent, dirent) {
 
 
 
+const { readdirSync } = __nccwpck_require__(7147);
 async function run() {
     if (!cache.isFeatureAvailable()) {
         return;
     }
+    const enable_multi_crate = core.getInput("enable-multi-crate") || false;
+    core.info(`enable-multi-crate": ${enable_multi_crate}`);
+    var dirs = new Array();
+    const wdir = core.getInput("working-directory");
+    const getDirectories = (source) => readdirSync(source, { withFileTypes: true })
+        .filter((dirent) => dirent.isDirectory())
+        .map((dirent) => dirent.name);
+    if (enable_multi_crate) {
+        const subdirs = getDirectories(wdir);
+        for (const subdir of subdirs) {
+            dirs.push(wdir + "/" + subdir);
+        }
+    }
+    else {
+        dirs.push(wdir);
+    }
+    core.info(`dirs: ${JSON.stringify(dirs)}`);
     try {
         const { paths: savePaths, key } = await getCacheConfig();
         if (core.getState(stateKey) === key) {
