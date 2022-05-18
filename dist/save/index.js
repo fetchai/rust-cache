@@ -60649,10 +60649,12 @@ function isValidEvent() {
 }
 async function getCacheConfig() {
     let lockHash = core.getState(stateHash);
+    core.info(`getCacheConfig`);
     core.info(`lockHash - 1: ${lockHash}`);
     if (!lockHash) {
-        core.info(`lockHash - 2: ${lockHash}`);
         lockHash = await getLockfileHash();
+        core.info(`lockHash - 2: ${lockHash}`);
+        core.info(`saveState: ${stateHash}: ${lockHash}`);
         core.saveState(stateHash, lockHash);
     }
     let key = `v0-rust-`;
@@ -60852,6 +60854,7 @@ async function run() {
         core.info(`***** - subdir: ${dir}`);
         try {
             const { paths: savePaths, key } = await getCacheConfig();
+            core.info(`getState: ${stateKey + dir}: ${core.getState(stateKey + dir)} ==${key} `);
             if (core.getState(stateKey + dir) === key) {
                 core.info(`Key: ${key}: Cache up-to-date.`);
                 continue;

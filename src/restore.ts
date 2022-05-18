@@ -57,6 +57,8 @@ async function run() {
       const restoreKey = await cache.restoreCache(paths, key, restoreKeys);
       if (restoreKey) {
         core.info(`Restored from cache key "${restoreKey}".`);
+        core.info(`saveState: ${stateKey + dir}: ${restoreKey}`)
+
         core.saveState(stateKey + dir, restoreKey);
 
         if (restoreKey !== key) {

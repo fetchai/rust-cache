@@ -56,6 +56,7 @@ async function run() {
     try {
       const { paths: savePaths, key } = await getCacheConfig();
 
+      core.info(`getState: ${stateKey + dir}: ${core.getState(stateKey + dir) } ==${key} `)
       if (core.getState(stateKey + dir) === key) {
         core.info(`Key: ${key}: Cache up-to-date.`);
         continue;

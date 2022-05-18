@@ -60649,10 +60649,12 @@ function isValidEvent() {
 }
 async function getCacheConfig() {
     let lockHash = core.getState(stateHash);
+    core.info(`getCacheConfig`);
     core.info(`lockHash - 1: ${lockHash}`);
     if (!lockHash) {
-        core.info(`lockHash - 2: ${lockHash}`);
         lockHash = await getLockfileHash();
+        core.info(`lockHash - 2: ${lockHash}`);
+        core.info(`saveState: ${stateHash}: ${lockHash}`);
         core.saveState(stateHash, lockHash);
     }
     let key = `v0-rust-`;
@@ -60862,6 +60864,7 @@ async function run() {
             const restoreKey = await cache.restoreCache(paths, key, restoreKeys);
             if (restoreKey) {
                 core.info(`Restored from cache key "${restoreKey}".`);
+                core.info(`saveState: ${stateKey + dir}: ${restoreKey}`);
                 core.saveState(stateKey + dir, restoreKey);
                 if (restoreKey !== key) {
                     // pre-clean the target directory on cache mismatch 
