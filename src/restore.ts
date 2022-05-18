@@ -31,10 +31,10 @@ async function run() {
     dirs.push(wdir)
 
   }
-
+  core.info(`dirs: ${JSON.stringify(dirs)}`)
   for (const dir of dirs){
     process.chdir(dir);
-    
+
     try {
 
       core.info(`***** - subdir: ${dir}`)
