@@ -4,7 +4,7 @@ import { cleanTarget, getCacheConfig, getCargoBins, getPackages, stateBins, stat
 const { readdirSync } = require('fs')
 
 async function run() {
-  if (!cache.isFeatureAvailable()) { 
+  if (!cache.isFeatureAvailable()) {
     setCacheHitOutput(false);
     return;
   }
