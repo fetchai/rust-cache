@@ -60854,7 +60854,7 @@ async function run() {
         try {
             const { paths: savePaths, key } = await getCacheConfig();
             let uniqueKey = await getLockfileHash();
-            if (core.getState(uniqueKey) === key) {
+            if (core.getState(uniqueKey) === uniqueKey) {
                 core.info(`Key: ${key}: Cache up-to-date.`);
                 continue;
             }
