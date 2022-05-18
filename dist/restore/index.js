@@ -60834,8 +60834,9 @@ async function run() {
             .map((dirent) => dirent.name);
         if (enable_multi_crate) {
             const subdirs = getDirectories(wdir);
-            core.info(`subdirs: ${subdirs}`);
+            core.info(`subdirs: ${JSON.stringify(subdirs)}`);
             for (const subdir in subdirs) {
+                core.info(`subdir: ${subdir}`);
                 dirs.push(wdir + "/" + subdir);
             }
         }
