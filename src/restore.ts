@@ -9,6 +9,9 @@ async function run() {
   }
 
   try {
+    const enable_multi_crate = core.getInput("enable-multi-crate");
+    core.info(`enable-multi-crate": ${enable_multi_crate}`);
+
     var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();
     if (cacheOnFailure !== "true") {
       cacheOnFailure = "false";

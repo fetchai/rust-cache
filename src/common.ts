@@ -14,7 +14,9 @@ process.on("uncaughtException", (e) => {
   }
 });
 
+
 const cwd = core.getInput("working-directory");
+core.info(`working-directory": ${cwd}`);
 // TODO: this could be read from .cargo config file directly
 const targetDir = core.getInput("target-dir") || "./target";
 if (cwd) {

@@ -17,6 +17,9 @@ inputs:
   cache-on-failure:
     description: "Cache even if the build fails. Defaults to false"
     required: false
+  enable-multi-crate:
+    description: "Set to true to treat all sub directories as seperate crates"
+    required: false    
 outputs:
   cache-hit:
     description: "A boolean value that indicates an exact match was found"

@@ -60625,6 +60625,7 @@ process.on("uncaughtException", (e) => {
     }
 });
 const cwd = core.getInput("working-directory");
+core.info(`working-directory": ${cwd}`);
 // TODO: this could be read from .cargo config file directly
 const targetDir = core.getInput("target-dir") || "./target";
 if (cwd) {
@@ -60823,6 +60824,8 @@ async function run() {
         return;
     }
     try {
+        const enable_multi_crate = core.getInput("enable-multi-crate");
+        core.info(`enable-multi-crate": ${enable_multi_crate}`);
         var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();
         if (cacheOnFailure !== "true") {
             cacheOnFailure = "false";
