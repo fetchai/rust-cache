@@ -60689,7 +60689,7 @@ async function getCacheConfig() {
 }
 async function getCargoBins() {
     try {
-        const { installs } = JSON.parse(await external_fs_default().promises.readFile(external_path_default().join(paths.cargoHome, ".crates2.json"), "utf8"));
+        const { installs } = JSON.parse(await fs.promises.readFile(path.join(paths.cargoHome, ".crates2.json"), "utf8"));
         const bins = new Set();
         for (const pkg of Object.values(installs)) {
             for (const bin of pkg.bins) {
@@ -60856,10 +60856,9 @@ async function run() {
         catch { }
         core.info(`save.run()6`);
         await getCacheConfig();
-        try {
-            await cleanBin();
-        }
-        catch { }
+        // try {
+        //   await cleanBin();
+        // } catch {}
         core.info(`save.run()7`);
         await getCacheConfig();
         try {
@@ -60893,19 +60892,19 @@ async function getRegistryName() {
     const first = files.shift();
     return external_path_default().basename(external_path_default().dirname(first));
 }
-async function cleanBin() {
-    const bins = await getCargoBins();
-    const oldBins = JSON.parse(core.getState(stateBins));
-    for (const bin of oldBins) {
-        bins.delete(bin);
-    }
-    const dir = await external_fs_default().promises.opendir(external_path_default().join(paths.cargoHome, "bin"));
-    for await (const dirent of dir) {
-        if (dirent.isFile() && !bins.has(dirent.name)) {
-            await rm(dir.path, dirent);
-        }
-    }
-}
+// async function cleanBin() {
+//   const bins = await getCargoBins();
+//   const oldBins = JSON.parse(core.getState(stateBins));
+//   for (const bin of oldBins) {
+//     bins.delete(bin);
+//   }
+//   const dir = await fs.promises.opendir(path.join(paths.cargoHome, "bin"));
+//   for await (const dirent of dir) {
+//     if (dirent.isFile() && !bins.has(dirent.name)) {
+//       await rm(dir.path, dirent);
+//     }
+//   }
+// }
 async function cleanRegistry(registryName, packages) {
     await io.rmRF(external_path_default().join(paths.index, registryName, ".cache"));
     const pkgSet = new Set(packages.map((p) => `${p.name}-${p.version}.crate`));
