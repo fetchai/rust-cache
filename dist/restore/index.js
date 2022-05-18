@@ -60827,11 +60827,22 @@ async function run() {
     try {
         const enable_multi_crate = core.getInput("enable-multi-crate") || false;
         core.info(`enable-multi-crate": ${enable_multi_crate}`);
+        var dirs = new Array();
+        const wdir = process.cwd();
         const getDirectories = (source) => readdirSync(source, { withFileTypes: true })
             .filter((dirent) => dirent.isDirectory())
             .map((dirent) => dirent.name);
+        if (enable_multi_crate) {
+            const subdirs = getDirectories(wdir);
+            for (const subdir in subdirs) {
+                dirs.push(wdir + "/" + subdir);
+            }
+        }
+        else {
+            dirs.push(wdir);
+        }
         core.info(`process.cwd(): ${process.cwd()}`);
-        core.info(`getDirectories: ${JSON.stringify(getDirectories(process.cwd()))}`);
+        core.info(`dirs: ${JSON.stringify(dirs)}`);
         var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();
         if (cacheOnFailure !== "true") {
             cacheOnFailure = "false";
