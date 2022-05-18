@@ -18,7 +18,7 @@ async function run() {
         .filter((dirent: { isDirectory: () => any; }) => dirent.isDirectory())
         .map((dirent: { name: any; }) => dirent.name)
 
-    core.info(`process.cwd: ${process.cwd}`)
+    core.info(`process.cwd(): ${process.cwd()}`)
     core.info(`getDirectories: ${JSON.stringify(getDirectories)}`)
 
     var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();

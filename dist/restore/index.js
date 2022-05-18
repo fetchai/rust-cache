@@ -60830,7 +60830,7 @@ async function run() {
         const getDirectories = (source) => readdirSync(source, { withFileTypes: true })
             .filter((dirent) => dirent.isDirectory())
             .map((dirent) => dirent.name);
-        core.info(`process.cwd: ${process.cwd}`);
+        core.info(`process.cwd(): ${process.cwd()}`);
         core.info(`getDirectories: ${JSON.stringify(getDirectories)}`);
         var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();
         if (cacheOnFailure !== "true") {
