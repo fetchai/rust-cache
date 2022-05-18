@@ -60657,7 +60657,7 @@ async function getCacheConfig(dir) {
         core.info(`saveState: ${stateHash + dir}: ${lockHash}`);
         core.saveState(stateHash + dir, lockHash);
     }
-    let key = `v0-rust-`;
+    let key = `v1-rust-`;
     const sharedKey = core.getInput("sharedKey");
     if (sharedKey) {
         key += `${sharedKey}-`;
