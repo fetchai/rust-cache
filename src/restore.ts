@@ -4,7 +4,7 @@ import { cleanTarget, getCacheConfig, getCargoBins, getPackages, stateBins, stat
 const { readdirSync } = require('fs')
 
 async function run() {
-  if (!cache.isFeatureAvailable()) {
+  if (!cache.isFeatureAvailable()) { 
     setCacheHitOutput(false);
     return;
   }
@@ -19,7 +19,7 @@ async function run() {
         .map((dirent: { name: any; }) => dirent.name)    
 
     core.info(`getDirectories: ${JSON.stringify(getDirectories)}`)
-    
+
     var cacheOnFailure = core.getInput("cache-on-failure").toLowerCase();
     if (cacheOnFailure !== "true") {
       cacheOnFailure = "false";
