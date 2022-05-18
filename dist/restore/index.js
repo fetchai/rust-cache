@@ -60651,8 +60651,8 @@ async function getCacheConfig() {
     let lockHash = core.getState(stateHash);
     core.info(`lockHash - 1: ${lockHash}`);
     if (!lockHash) {
-        core.info(`lockHash - 2: ${lockHash}`);
         lockHash = await getLockfileHash();
+        core.info(`lockHash - 2: ${lockHash}`);
         core.saveState(stateHash, lockHash);
     }
     let key = `v0-rust-`;
