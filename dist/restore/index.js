@@ -60835,7 +60835,7 @@ async function run() {
         if (enable_multi_crate) {
             const subdirs = getDirectories(wdir);
             core.info(`subdirs: ${JSON.stringify(subdirs)}`);
-            for (const subdir in subdirs) {
+            for (const subdir of subdirs) {
                 core.info(`subdir: ${subdir}`);
                 dirs.push(wdir + "/" + subdir);
             }
