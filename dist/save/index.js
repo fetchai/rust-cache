@@ -60870,7 +60870,7 @@ async function run() {
             core.info(`Removed  cleanBin as it prevents us working with multiple cargo directories`);
             // try {
             //   await cleanBin();
-            // } catch {}
+            // } catch {} 
             try {
                 await cleanGit(packages);
             }
